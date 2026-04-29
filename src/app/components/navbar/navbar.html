@@ -1,0 +1,20 @@
+<div class="h-16 bg-gray-900 border-b border-gray-800 fixed top-0 right-0 left-64 z-10">
+  <div class="h-full px-6 flex items-center justify-between">
+    <!-- Titre page -->
+    <div>
+      <h2 class="text-xl font-semibold text-white">Bienvenue, {{ user?.nom || 'Admin' }} 👋</h2>
+      <p class="text-sm text-gray-400">Gérez votre boutique en ligne</p>
+    </div>
+
+    <!-- User info -->
+    <div class="flex items-center gap-4">
+      <div class="text-right">
+        <p class="text-sm font-medium text-white">{{ user?.nom }}</p>
+        <p class="text-xs text-gray-400">{{ user?.email }}</p>
+      </div>
+      <div class="w-10 h-10 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-600 flex items-center justify-center text-black font-bold">
+        {{ user?.nom?.charAt(0) || 'A' }}
+      </div>
+    </div>
+  </div>
+</div>
