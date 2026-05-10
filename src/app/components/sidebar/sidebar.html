@@ -1,33 +1,46 @@
-<div class="w-64 bg-gray-900 h-screen fixed left-0 top-0 border-r border-gray-800">
+<aside class="sidebar" [class.collapsed]="collapsed">
   <!-- Logo -->
-  <div class="p-6 border-b border-gray-800">
-    <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
-      HACHKA
-    </h1>
-    <p class="text-gray-500 text-sm mt-1">Admin Dashboard</p>
+  <div class="sidebar-logo">
+    <div class="logo-icon">
+      <span class="icon" style="font-size:22px;color:#fff;">diamond</span>
+    </div>
+    <div class="logo-text" *ngIf="!collapsed">
+      <span class="logo-brand">HACHKA</span>
+      <span class="logo-sub">Admin Panel</span>
+    </div>
+    <button class="collapse-btn" (click)="toggleCollapse()" [title]="collapsed ? 'Expand' : 'Collapse'">
+      <span class="icon">{{ collapsed ? 'chevron_right' : 'chevron_left' }}</span>
+    </button>
   </div>
 
-  <!-- Menu -->
-  <nav class="p-4">
-    <a
-      *ngFor="let item of menuItems"
-      [routerLink]="item.route"
-      routerLinkActive="bg-yellow-500/10 border-yellow-500 text-yellow-500"
-      class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 transition mb-2 border border-transparent"
-    >
-      <span class="text-2xl">{{ item.icon }}</span>
-      <span class="font-medium">{{ item.label }}</span>
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+    <div class="nav-section-label" *ngIf="!collapsed">NAVIGATION</div>
+
+    <a *ngFor="let item of menuItems; let i = index"
+       [routerLink]="item.route"
+       routerLinkActive="active"
+       class="nav-item"
+       [title]="collapsed ? item.label : ''"
+       [style.animation-delay]="(i * 0.05) + 's'">
+      <div class="nav-icon-wrap">
+        <span class="icon">{{ item.icon }}</span>
+      </div>
+      <span class="nav-label" *ngIf="!collapsed">{{ item.label }}</span>
+      <div class="nav-badge" *ngIf="item.badge && !collapsed">{{ item.badge }}</div>
     </a>
   </nav>
 
+  <!-- Spacer -->
+  <div class="sidebar-spacer"></div>
+
   <!-- Déconnexion -->
-  <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
-    <button
-      (click)="deconnecter()"
-      class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 hover:bg-red-500/10 transition"
-    >
-      <span class="text-2xl">🚪</span>
-      <span class="font-medium">Déconnexion</span>
+  <div class="sidebar-footer">
+    <button class="nav-item logout-btn" (click)="deconnecter()" title="Déconnexion">
+      <div class="nav-icon-wrap danger">
+        <span class="icon">logout</span>
+      </div>
+      <span class="nav-label" *ngIf="!collapsed">Déconnexion</span>
     </button>
   </div>
-</div>
+</aside>

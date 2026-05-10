@@ -1,132 +1,163 @@
-<div class="min-h-screen bg-black">
-  <app-sidebar></app-sidebar>
-  <app-navbar></app-navbar>
+<div class="page-layout">
+  <app-sidebar (collapsedChange)="onSidebarToggle($event)"></app-sidebar>
+  <app-navbar [sidebarCollapsed]="sidebarCollapsed"></app-navbar>
 
-  <div class="ml-64 pt-16 p-8">
-    <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-white">Commandes</h1>
-      <p class="text-gray-400 mt-1">Suivez et gérez toutes les commandes</p>
+  <main class="page-content animate-fade-in" [class.content-collapsed]="sidebarCollapsed">
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Commandes</h1>
+        <p class="page-subtitle">Suivi et gestion de toutes les commandes</p>
+      </div>
     </div>
 
-    <!-- Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-      <div class="bg-gray-900 rounded-xl p-6 border border-gray-800">
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center text-2xl">
-            📋
-          </div>
-          <div>
-            <h3 class="text-2xl font-bold text-white">{{ commandes.length }}</h3>
-            <p class="text-gray-400 text-sm">Total</p>
-          </div>
+    <!-- KPI stats -->
+    <div class="stats-grid" style="padding: 0 32px; margin-bottom: 24px;">
+      <div class="stat-card">
+        <div class="stat-icon-wrap" style="background:rgba(99,102,241,0.12);">
+          <span class="icon" style="color:#818cf8;font-size:22px;">receipt_long</span>
+        </div>
+        <div class="stat-body">
+          <span class="stat-label">Total</span>
+          <span class="stat-value">{{ stats.total }}</span>
         </div>
       </div>
-      <div class="bg-gray-900 rounded-xl p-6 border border-gray-800">
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-yellow-500 to-yellow-600 flex items-center justify-center text-2xl">
-            ⏸
-          </div>
-          <div>
-            <h3 class="text-2xl font-bold text-white">1</h3>
-            <p class="text-gray-400 text-sm">En attente</p>
-          </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap" style="background:rgba(245,158,11,0.12);">
+          <span class="icon" style="color:#fbbf24;font-size:22px;">schedule</span>
+        </div>
+        <div class="stat-body">
+          <span class="stat-label">En attente</span>
+          <span class="stat-value">{{ stats.attente }}</span>
         </div>
       </div>
-      <div class="bg-gray-900 rounded-xl p-6 border border-gray-800">
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center text-2xl">
-            ⏳
-          </div>
-          <div>
-            <h3 class="text-2xl font-bold text-white">1</h3>
-            <p class="text-gray-400 text-sm">En cours</p>
-          </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap" style="background:rgba(59,130,246,0.12);">
+          <span class="icon" style="color:#60a5fa;font-size:22px;">local_shipping</span>
+        </div>
+        <div class="stat-body">
+          <span class="stat-label">En cours</span>
+          <span class="stat-value">{{ stats.cours }}</span>
         </div>
       </div>
-      <div class="bg-gray-900 rounded-xl p-6 border border-gray-800">
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center text-2xl">
-            ✓
-          </div>
-          <div>
-            <h3 class="text-2xl font-bold text-white">1</h3>
-            <p class="text-gray-400 text-sm">Livrées</p>
-          </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap" style="background:rgba(16,185,129,0.12);">
+          <span class="icon" style="color:#34d399;font-size:22px;">check_circle</span>
+        </div>
+        <div class="stat-body">
+          <span class="stat-label">Livrées</span>
+          <span class="stat-value">{{ stats.livree }}</span>
         </div>
       </div>
     </div>
 
-    <!-- Liste des commandes -->
-    <div class="space-y-4">
-      <div *ngFor="let commande of commandes" class="bg-gray-900 rounded-xl border border-gray-800 p-6">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <h3 class="text-lg font-bold text-white">Commande #{{ commande._id }}</h3>
-            <p class="text-sm text-gray-400">{{ commande.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+    <!-- Loading state -->
+    <div *ngIf="loading" class="loading-state" style="padding: 0 32px;">
+      <div class="card" style="padding: 60px; text-align: center;">
+        <span class="icon" style="font-size:36px;color:#1f2d45;">hourglass_empty</span>
+        <p style="color:#334155;margin-top:12px;">Chargement des commandes...</p>
+      </div>
+    </div>
+
+    <!-- Orders list -->
+    <div *ngIf="!loading" class="orders-list" style="padding: 0 32px 40px;">
+      <div *ngFor="let commande of commandes; let i = index"
+           class="order-card animate-fade-in"
+           [style.animation-delay]="(i * 0.05) + 's'">
+
+        <!-- Order header -->
+        <div class="order-header">
+          <div class="order-id-wrap">
+            <div class="order-icon">
+              <span class="icon" style="font-size:18px;color:#818cf8;">receipt_long</span>
+            </div>
+            <div>
+              <p class="order-id">Commande <span class="id-badge">#{{ commande._id?.slice(-8) }}</span></p>
+              <p class="order-date">{{ commande.createdAt | date:'dd MMMM yyyy — HH:mm' }}</p>
+            </div>
           </div>
-          <span class="px-4 py-2 rounded-full text-sm font-medium {{ getStatutClass(commande.statut) }}">
+          <span class="status-badge" [ngClass]="getStatutClass(commande.statut)">
+            <span class="icon" style="font-size:13px;">{{ getStatutIcon(commande.statut) }}</span>
             {{ getStatutLabel(commande.statut) }}
           </span>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Client -->
-          <div>
-            <h4 class="text-sm font-medium text-gray-400 mb-2">Client</h4>
-            <p class="text-white font-medium">{{ commande.utilisateur.nom }}</p>
-            <p class="text-sm text-gray-400">{{ commande.utilisateur.email }}</p>
+        <!-- Order body -->
+        <div class="order-body">
+          <!-- Client info -->
+          <div class="order-info-block">
+            <p class="info-label">
+              <span class="icon" style="font-size:15px;color:#475569;">person</span> Client
+            </p>
+            <p class="info-value">{{ commande.utilisateur?.nom || 'Inconnu' }}</p>
+            <p class="info-sub">{{ commande.utilisateur?.email || '—' }}</p>
           </div>
 
           <!-- Livraison -->
-          <div>
-            <h4 class="text-sm font-medium text-gray-400 mb-2">Livraison</h4>
-            <p class="text-white">{{ commande.adresseLivraison.ville }}, {{ commande.adresseLivraison.pays }}</p>
+          <div class="order-info-block">
+            <p class="info-label">
+              <span class="icon" style="font-size:15px;color:#475569;">location_on</span> Livraison
+            </p>
+            <p class="info-value">{{ commande.adresseLivraison?.ville || 'Inconnue' }}</p>
+            <p class="info-sub">{{ commande.adresseLivraison?.pays || 'Tunisie' }}</p>
           </div>
 
           <!-- Articles -->
-          <div class="md:col-span-2">
-            <h4 class="text-sm font-medium text-gray-400 mb-2">Articles</h4>
-            <div class="space-y-2">
-              <div *ngFor="let article of commande.articles" class="flex items-center justify-between bg-gray-800 rounded-lg p-3">
-                <span class="text-white">{{ article.nom }} x{{ article.quantite }}</span>
-                <span class="text-yellow-500 font-semibold">{{ article.prix * article.quantite }} TND</span>
+          <div class="order-info-block order-info-wide">
+            <p class="info-label">
+              <span class="icon" style="font-size:15px;color:#475569;">shopping_bag</span>
+              Articles ({{ commande.articles?.length || 0 }})
+            </p>
+            <div class="articles-list">
+              <div *ngFor="let a of commande.articles" class="article-row">
+                <span class="article-name">{{ a.nom }} <span class="article-qty">×{{ a.quantite }}</span></span>
+                <span class="price-text">{{ a.prix * a.quantite }} TND</span>
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- Total -->
-          <div class="md:col-span-2 flex items-center justify-between pt-4 border-t border-gray-800">
-            <span class="text-lg font-bold text-white">Total</span>
-            <span class="text-2xl font-bold text-yellow-500">{{ commande.total }} TND</span>
+        <!-- Order footer -->
+        <div class="order-footer">
+          <div class="order-total">
+            <span class="icon" style="font-size:16px;color:#475569;">payments</span>
+            <span class="total-label">Total :</span>
+            <span class="total-amount">{{ commande.total }} TND</span>
+            <span *ngIf="commande.pointsGagnes" style="margin-left: 12px; color: #fbbf24; font-size: 13px; font-weight: 800;">
+              <span class="icon" style="font-size:14px;vertical-align:middle;">stars</span>
+              +{{ commande.pointsGagnes }} pts
+            </span>
+          </div>
+          <div class="order-actions">
+            <button *ngIf="commande.statut === 'en_attente'"
+                    class="btn btn-secondary btn-sm"
+                    (click)="changerStatut(commande, 'en_cours')">
+              <span class="icon" style="font-size:15px;">play_arrow</span>
+              Confirmer
+            </button>
+            <button *ngIf="commande.statut === 'en_cours'"
+                    class="btn btn-sm" style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.2);color:#34d399;"
+                    (click)="changerStatut(commande, 'livrée')">
+              <span class="icon" style="font-size:15px;">check_circle</span>
+              Livrée
+            </button>
+            <button *ngIf="commande.statut !== 'livrée' && commande.statut !== 'annulée'"
+                    class="btn btn-danger btn-sm"
+                    (click)="changerStatut(commande, 'annulée')">
+              <span class="icon" style="font-size:15px;">cancel</span>
+              Annuler
+            </button>
           </div>
         </div>
+      </div>
 
-        <!-- Actions -->
-        <div class="flex gap-2 mt-4">
-          <button
-            *ngIf="commande.statut === 'en_attente'"
-            (click)="changerStatut(commande, 'en_cours')"
-            class="px-4 py-2 bg-blue-500/10 text-blue-500 rounded-lg hover:bg-blue-500/20 transition"
-          >
-            ▶️ Confirmer
-          </button>
-          <button
-            *ngIf="commande.statut === 'en_cours'"
-            (click)="changerStatut(commande, 'livrée')"
-            class="px-4 py-2 bg-green-500/10 text-green-500 rounded-lg hover:bg-green-500/20 transition"
-          >
-            ✓ Marquer livrée
-          </button>
-          <button
-            *ngIf="commande.statut !== 'livrée' && commande.statut !== 'annulée'"
-            (click)="changerStatut(commande, 'annulée')"
-            class="px-4 py-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500/20 transition"
-          >
-            ✗ Annuler
-          </button>
-        </div>
+      <!-- Empty state -->
+      <div *ngIf="commandes.length === 0" class="card" style="padding:60px;text-align:center;">
+        <span class="icon" style="font-size:40px;color:#1f2d45;">receipt_long</span>
+        <p style="color:#334155;margin-top:16px;font-size:15px;">Aucune commande pour le moment</p>
       </div>
     </div>
-  </div>
+
+  </main>
 </div>

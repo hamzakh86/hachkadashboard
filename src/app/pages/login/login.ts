@@ -15,6 +15,7 @@ export class Login {
   motDePasse = '';
   loading = false;
   erreur = '';
+  showPassword = false;
 
   constructor(
     private authService: AuthService,
@@ -23,7 +24,7 @@ export class Login {
 
   onSubmit() {
     if (!this.email || !this.motDePasse) {
-      this.erreur = 'Email et mot de passe requis';
+      this.erreur = 'Veuillez saisir votre email et votre mot de passe';
       return;
     }
 
@@ -39,11 +40,9 @@ export class Login {
       },
       error: (err) => {
         this.loading = false;
-        this.erreur = err.error?.message || 'Erreur de connexion';
+        this.erreur = err.error?.message || 'Email ou mot de passe incorrect';
       },
-      complete: () => {
-        this.loading = false;
-      },
+      complete: () => { this.loading = false; },
     });
   }
 }

@@ -1,0 +1,50 @@
+<div class="page-layout">
+  <app-sidebar (collapsedChange)="onSidebarToggle($event)"></app-sidebar>
+  <app-navbar [sidebarCollapsed]="sidebarCollapsed"></app-navbar>
+
+  <main class="page-content animate-fade-in" [class.content-collapsed]="sidebarCollapsed">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Newsletter</h1>
+        <p class="page-subtitle">Gestion des abonnés à la lettre d'information</p>
+      </div>
+      <button class="btn btn-primary" (click)="exportToCSV()">
+        <span class="icon">download</span>
+        Exporter en CSV
+      </button>
+    </div>
+
+    <div style="padding: 0 32px 40px;">
+      <div class="card">
+        <div class="card-header">
+           <h2 class="card-title">{{ subscribers.length }} Abonnés</h2>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Inscrit le</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let sub of subscribers" class="table-row">
+                <td style="color:#e2e8f0; font-weight: 500;">{{ sub.email }}</td>
+                <td>{{ sub.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                  <button class="btn btn-danger btn-sm" (click)="deleteSubscriber(sub._id)">
+                    <span class="icon">delete</span>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="subscribers.length === 0">
+                <td colspan="3" style="text-align: center; padding: 40px;">Aucun abonné pour le moment</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

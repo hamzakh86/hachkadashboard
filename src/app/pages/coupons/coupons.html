@@ -1,0 +1,81 @@
+<div class="page-layout">
+  <app-sidebar (collapsedChange)="onSidebarToggle($event)"></app-sidebar>
+  <app-navbar [sidebarCollapsed]="sidebarCollapsed"></app-navbar>
+
+  <main class="page-content animate-fade-in" [class.content-collapsed]="sidebarCollapsed">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Coupons & Promotions</h1>
+        <p class="page-subtitle">Gérez les codes promo et les réductions</p>
+      </div>
+    </div>
+
+    <div style="padding: 0 32px; margin-bottom: 32px;">
+      <div class="card" style="padding: 24px;">
+        <h3 style="color:#e2e8f0; margin-bottom: 20px; font-weight: 600;">Nouveau Coupon</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; align-items: end;">
+          <div class="form-group">
+            <label>Code</label>
+            <input type="text" [(ngModel)]="newCoupon.code" placeholder="Ex: ETE2024" style="width:100%; padding: 10px; background: #0f172a; border: 1px solid #1e293b; color: white; rounded: 8px;">
+          </div>
+          <div class="form-group">
+            <label>Réduction (%)</label>
+            <input type="number" [(ngModel)]="newCoupon.pourcentage" style="width:100%; padding: 10px; background: #0f172a; border: 1px solid #1e293b; color: white; rounded: 8px;">
+          </div>
+          <div class="form-group">
+            <label>Expiration</label>
+            <input type="date" [(ngModel)]="newCoupon.expiration" style="width:100%; padding: 10px; background: #0f172a; border: 1px solid #1e293b; color: white; rounded: 8px;">
+          </div>
+          <button class="btn btn-primary" (click)="createCoupon()">
+            <span class="icon">add</span>
+            Créer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding: 0 32px 40px;">
+      <div class="card">
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Réduction</th>
+                <th>Expiration</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let coupon of coupons" class="table-row">
+                <td style="font-weight: 800; color: #6366f1; letter-spacing: 1px;">{{ coupon.code }}</td>
+                <td>{{ coupon.pourcentage }}%</td>
+                <td>{{ coupon.expiration | date:'dd/MM/yyyy' }}</td>
+                <td>
+                  <span class="status-badge" [class.badge-confirm]="coupon.actif" [class.badge-cancel]="!coupon.actif">
+                    {{ coupon.actif ? 'Actif' : 'Inactif' }}
+                  </span>
+                </td>
+                <td>
+                  <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-sm" [style.background]="coupon.actif ? '#ef444420' : '#10b98120'" [style.color]="coupon.actif ? '#ef4444' : '#10b981'" (click)="toggleCoupon(coupon._id)">
+                      <span class="icon">{{ coupon.actif ? 'block' : 'check_circle' }}</span>
+                      {{ coupon.actif ? 'Désactiver' : 'Activer' }}
+                    </button>
+                    <button class="btn btn-danger btn-sm" (click)="deleteCoupon(coupon._id)">
+                      <span class="icon">delete</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="coupons.length === 0">
+                <td colspan="5" style="text-align: center; padding: 40px;">Aucun coupon trouvé</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
